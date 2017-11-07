@@ -30,7 +30,7 @@ constexpr double J(0.1);
 //! The inhibitory "current"
 constexpr double Ji(-g * J);
 //! The delay of the receiving spike current
-constexpr int D(1.5);
+constexpr double D(1.5);
 //! The poisson coefficient
 constexpr double Jp(0.1);
 
