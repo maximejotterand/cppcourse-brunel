@@ -36,6 +36,10 @@ class Network {
 	//! Destruction of the network, called in the destructor
 	void destr();
 	/*! Update the network :
+	 * @brief Update every neurons of the network and those who are depending on others
+	 */
+	void update();
+	/*! Update the network :
 	 * @Param in is the string(the infos) we will write in Donnée.txt
 	 * @brief Update every neurons of the network and those who are depending on others
 	 */

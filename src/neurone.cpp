@@ -1,9 +1,15 @@
 #include "neurone.hpp"
 
-Neurone::Neurone(double p, bool r)
-:pot(p), refract(r)  {
-	buffer = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+Neurone::Neurone(bool e, double p, bool r)
+:excit(e), pot(p), refract(r)  {
+	buffer = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	courant = c;
+}
+
+Neurone::Neurone(Neurone const& n)
+:excit(n.getType()), pot(n.getPot()), refract(n.getRefract()) {
+		buffer = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		courant = c;
 }
 
 bool Neurone::update(double t_rep, bool poiss) {
@@ -41,7 +47,7 @@ double Neurone::pot_calc(bool poisson) {
 
 
 void Neurone::receive(double j_) {
-	buffer[D / h] += j_;
+	buffer[(D / h) - 1] += j_;
 }
 
 double Neurone::getPot() const {
@@ -50,6 +56,10 @@ double Neurone::getPot() const {
 
 void Neurone::setPot(double p) {
 	pot = p;
+}
+
+bool Neurone::getType() const {
+	return excit;
 }
 
 void Neurone::setCourant(double i) {
@@ -87,9 +97,6 @@ size_t Neurone::getSize() {
 }
 
 double Neurone::Poisson() {
-	/*static random_device rd;
-	static mt19937 gen(rd());
-	static poisson_distribution<> distr((u_ext / 10));*/
 	return (distr(gen) * Jp);
 }
 

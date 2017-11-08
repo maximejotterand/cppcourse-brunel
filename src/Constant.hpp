@@ -10,8 +10,8 @@ constexpr double h(0.1);
 //! Threshold potential above which we observe a spike
 constexpr double v_th(20.0);
 //! The time limit of the experiment
-//! 20 means that it will be 200 time steps
-constexpr double t_stop(100);
+//! 1000 means that it will be 10000 time steps
+constexpr double t_stop(1000);
 //! The input current
 constexpr double c(0.0);
 //! The resistance of the membrane

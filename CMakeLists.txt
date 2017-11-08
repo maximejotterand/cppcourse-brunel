@@ -10,6 +10,7 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 add_executable (
 	Neurone
 	src/main2.cpp
+	src/Experiment.cpp
 	src/neurone.cpp
 	src/network.cpp
 	src/Constant.hpp

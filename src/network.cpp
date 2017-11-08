@@ -17,8 +17,13 @@ void Network::destr() {
 Network::Network()
 {
 		for (size_t i(0); i < N; ++i) {
-			Neurone n;
-			add_neuron(new Neurone(n));
+			if (i < Ne) {
+				Neurone n();
+				add_neuron(new Neurone(n));
+			} else {
+				Neurone n(false);
+				add_neuron(new Neurone(n));
+			}
 		}
 		
 		initialisation_connection();
@@ -29,6 +34,47 @@ Network::~Network() {
 	destr();
 }
 
+
+void Network::update() {
+	
+	double simtime = 0.0;
+    size_t time;
+    time = 0;
+    do {
+	
+		bool spike(false);
+		nb_sp.push_back(0);
+		
+		//iteration on all the neuron
+		for (size_t i(0); i < res.size(); ++i) {
+			spike = false;
+			
+			//quick check to avoid seg fault (access a function of a nullptr)
+			if(res[i] != nullptr) {
+				//Check if the neuron spike and so give excitation or inhibition to the his post connections
+				if ((*res[i]).update()) {
+					for (int k(0); k < matrice_connections[i].size(); ++k) {
+						if (res[matrice_connections[i][k]] != nullptr) {
+							// Send the appropriate current
+							if ((*res[i]).getType() == true) {
+								(*res[matrice_connections[i][k]]).receive(J);
+							} else {
+								(*res[matrice_connections[i][k]]).receive(Ji);
+							}
+					}
+						
+					}
+					++nb_sp[time - 1];
+				}
+}
+}
+
+
+time += 1;
+simtime += h;
+} while(simtime < t_stop);
+
+}
 
 void Network::update(ofstream& c) {
 	
@@ -45,38 +91,26 @@ void Network::update(ofstream& c) {
 			spike = false;
 			
 			//quick check to avoid seg fault (access a function of a nullptr)
-			assert(res[i] != nullptr);
 			if(res[i] != nullptr) {
-				
-				//update the buffer of the neuron i
-				//neuron i has m post neurons, so possibles excitations/inhibitions
-				for(size_t m(0); m < matrice_connections[i].size(); ++m) {
-					
-					//another seg fault checking
-					if (res[matrice_connections[i][m]] != nullptr) {
-						//neuron i receive a signal if the post neuron spike only
-					if ((*res[matrice_connections[i][m]]).getRefract()) {
-						
-						//receive either a excitory courant or a inhibitory
-						if (m < Ce) {
-							(*res[i]).receive(J);
-						} else if (m >= Ce) {
-							(*res[i]).receive(Ji);
+				//Check if the neuron spike and so give excitation or inhibition to the his post connections
+				if ((*res[i]).update()) {
+					for (int k(0); k < matrice_connections[i].size(); ++k) {
+						if (res[matrice_connections[i][k]] != nullptr) {
+						if ((*res[i]).getType() == true) {
+							(*res[matrice_connections[i][k]]).receive(J);
+						} else {
+							(*res[matrice_connections[i][k]]).receive(Ji);
 						}
+					}
 						
 					}
-				}
-			}
-			
-			
-					//update of all neurons
-					spike = (*res[i]).update();
-				if (spike) {
+					
 					//write in Donnée.txt the info of the first 30 neurons during the all experiment
 					if (i < 50) {
 					c << time / 10.0 << '\t' << i << '\n';
 					}
 					++nb_sp[time - 1];
+					
 				}
 }
 }
@@ -101,19 +135,11 @@ void Network::initialisation_connection() {
 	std::default_random_engine generator;
 
 	for (size_t n(0); n < res.size(); ++n) {
-		//The first part of the array are the excitatory post neuron the last the inhibitory
-		
 		array<int, (Ce + Ci)> a;
-		for (size_t i(0); i < Ce; ++i) {
-			uniform_int_distribution<int> distribution(0, Ne - 1);
+		for (int i(0); i < (Ce + Ci); ++i) {
+			uniform_int_distribution<int> distribution(0, N);
 			int r = distribution(generator);
 			a[i] = r;
-		}
-		
-		for (size_t j(Ce); j < (Ce + Ci); ++j) {
-			uniform_int_distribution<int> distribution(Ne, Ne + Ni);
-			int r = distribution(generator);
-			a[j] = r;
 		}
 		
 		matrice_connections.push_back(a);

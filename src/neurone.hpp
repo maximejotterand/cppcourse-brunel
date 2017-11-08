@@ -23,21 +23,31 @@ class Neurone {
 		//! Bool giving if the neuron is refractory (true) or not (false)
 		bool refract;
 		//! The ring-buffer 
-		array<double, 16> buffer;
+		array<double, 15> buffer;
 		//! The current
 		double courant;
+		//! Bool determinating the nature of the post current of the neuron
+		//! True means that it is excitatory
+		bool excit;
 		
 		
 	public :
 		//! Constructor
-		//! @Param p is the initial potential, r is the initial refractory booleen
-		Neurone(double p = 0.0, bool r = false);
+		//! @Param e is the nature of the neuron (excitatory(true) or inhibitory)
+		//! @Param p is the initial potential
+		//! @Param r is the initial refractory booleen
+		Neurone(bool e = true, double p = 0.0, bool r = false);
+		//! Copy constructor
+		//! @Param n is the constant reference to the neuron we want to copy
+		Neurone(Neurone const& n);
 		//! Getter potential
 		double getPot() const;
 		//! Setter potential
 		void setPot(double p);
 		//! Setter for the current
 		void setCourant(double i);
+		//! Getter of the nature of the neuron
+		bool getType() const;
 		/*! Getter of t_spikes
 		 * @Return The vector t_spikes (containing the time of the spikes)
 		 */
